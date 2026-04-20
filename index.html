@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CyberHuck · 罗明洙 — AI 训练师 / 医疗大模型数据专家</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<style>
+  :root{
+    --bg: #ffffff;
+    --bg-2: #f5f5f7;
+    --bg-3: #e8e8ed;
+    --ink: #1d1d1f;
+    --ink-2: #515154;
+    --ink-3: #86868b;
+    --line: #d2d2d7;
+    --line-soft: #e8e8ed;
+    --bio: oklch(0.55 0.14 142);   /* restrained natural green */
+    --ice: oklch(0.50 0.08 220);   /* calm blue */
+    --warn: oklch(0.55 0.10 65);   /* low-key amber */
+  }
+  html, body { background: var(--bg); color: var(--ink); }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-feature-settings: "ss01","cv11";
+    -webkit-font-smoothing: antialiased;
+  }
+  .font-serif { font-family: 'Newsreader', serif; font-optical-sizing: auto; }
+  .font-mono  { font-family: 'JetBrains Mono', monospace; }
+  .bg-base   { background: var(--bg); }
+  .bg-alt    { background: var(--bg-2); }
+  .bg-card   { background: var(--bg-3); }
+  .text-ink  { color: var(--ink); }
+  .text-ink-2{ color: var(--ink-2); }
+  .text-ink-3{ color: var(--ink-3); }
+  .text-bio  { color: var(--bio); }
+  .text-ice  { color: var(--ice); }
+  .text-warn { color: var(--warn); }
+  .bg-bio    { background: var(--bio); }
+  .border-line{ border-color: var(--line); }
+  .border-soft{ border-color: var(--line-soft); }
+
+  /* grain overlay — disabled for Apple-style clean look */
+  body::before{
+    content:"";
+    position: fixed; inset: 0;
+    pointer-events:none; z-index: 1;
+    opacity: 0;
+  }
+
+  /* hairline grid */
+  .grid-bg{
+    background-image:
+      linear-gradient(to right,  #e8e8ed 1px, transparent 1px),
+      linear-gradient(to bottom, #e8e8ed 1px, transparent 1px);
+    background-size: 80px 80px;
+    opacity: 0.9;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(0,0,0,0.9), rgba(0,0,0,0.05));
+  }
+
+  .marker-bio{ box-shadow: 0 0 0 1px var(--line), 0 0 30px -10px var(--bio); }
+
+  /* helical tick */
+  @keyframes pulse-bio { 0%,100%{opacity:.35} 50%{opacity:1} }
+  .pulse-bio{ animation: pulse-bio 2.4s ease-in-out infinite; }
+
+  @keyframes helixFloat {
+    0%   { transform: translate3d(0,0,0) rotate(0deg); }
+    50%  { transform: translate3d(0,-14px,0) rotate(3deg); }
+    100% { transform: translate3d(0,0,0) rotate(0deg); }
+  }
+  .helix-float{ animation: helixFloat 14s ease-in-out infinite; }
+
+  @keyframes streamScroll {
+    from { transform: translateY(0); }
+    to   { transform: translateY(-50%); }
+  }
+  .ticker-column{ animation: streamScroll 40s linear infinite; }
+
+  @keyframes dash {
+    to { stroke-dashoffset: -1000; }
+  }
+  .animated-path{ stroke-dasharray: 6 10; animation: dash 40s linear infinite; }
+
+  .section-label{
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.14em;
+    font-size: 11px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+  }
+
+  .hairline{ height:1px; background: linear-gradient(to right, transparent, var(--line), transparent); }
+
+  .chip{
+    border:1px solid var(--line);
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-2);
+    letter-spacing: .04em;
+  }
+
+  .link-underline{
+    background-image: linear-gradient(var(--bio), var(--bio));
+    background-size: 100% 1px;
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    transition: background-size .3s;
+  }
+  .link-underline:hover{ background-size: 100% 2px; }
+
+  /* Card hover */
+  .card-hover{ transition: all .3s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+  .card-hover:hover{ transform: translateY(-2px); border-color: var(--ink-3); box-shadow: 0 12px 32px -12px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.04); }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar{ width:10px; height:10px; }
+  ::-webkit-scrollbar-track{ background: var(--bg); }
+  ::-webkit-scrollbar-thumb{ background: var(--bg-3); border:2px solid var(--bg); border-radius:10px;}
+  ::-webkit-scrollbar-thumb:hover{ background: var(--line); }
+
+  html{ scroll-behavior: smooth; }
+
+  /* Selection */
+  ::selection { background: var(--bio); color: #ffffff; }
+
+  /* Measurement tick */
+  .measure{
+    background-image: repeating-linear-gradient(to right, var(--line) 0 1px, transparent 1px 8px);
+    height: 6px;
+  }
+
+  /* Project card glow */
+  .project-card{ position:relative; overflow:hidden; }
+  .project-card::before{
+    content:"";
+    position:absolute; inset:-1px;
+    background: radial-gradient(400px circle at var(--mx,50%) var(--my,50%), color-mix(in oklch, var(--bio) 30%, transparent), transparent 40%);
+    opacity: 0; transition: opacity .4s;
+    pointer-events: none;
+  }
+  .project-card:hover::before{ opacity: 1; }
+
+  /* Tweaks panel */
+  .tweaks-panel{
+    position: fixed; bottom: 24px; right: 24px; z-index: 50;
+    background: var(--bg); border:1px solid var(--line);
+    border-radius: 12px; padding: 16px; width: 280px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    box-shadow: 0 20px 50px -12px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.04);
+    color: var(--ink);
+  }
+  .tweaks-panel label{ display:flex; justify-content:space-between; align-items:center; gap:12px; padding:6px 0; }
+  .tweaks-panel input[type=range]{ accent-color: var(--bio); }
+  .tweaks-panel select, .tweaks-panel input{
+    background: var(--bg); border:1px solid var(--line); color: var(--ink);
+    padding: 4px 8px; border-radius: 4px; font-family:inherit; font-size: 11px;
+  }
+</style>
+</head>
+<body class="bg-base text-ink">
+
+<div id="root"></div>
+
+<script type="application/json" id="tweak-defaults">
+/*EDITMODE-BEGIN*/{
+  "accentHue": 235,
+  "heroVariant": "helix",
+  "showGrid": true,
+  "showTicker": true
+}/*EDITMODE-END*/
+</script>
+
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useRef, useMemo } = React;
+
+/* ============================================================
+   DATA
+   ============================================================ */
+const SKILLS = [
+  { cat: "AI·Tooling",   items: [
+    { k:"ChatGPT",    v:"GPT-4 / 4o" },
+    { k:"Claude",     v:"Opus / Sonnet" },
+    { k:"DeepSeek",   v:"V3 / R1" },
+    { k:"Kimi",       v:"Long-ctx" },
+    { k:"通义千问",    v:"Qwen2-72B" },
+    { k:"Coze",       v:"Agent" },
+    { k:"Dify",       v:"RAG" },
+  ]},
+  { cat: "AI·Engineering", items: [
+    { k:"Prompt Eng.", v:"CoT / Few-Shot / ReAct" },
+    { k:"RLHF",        v:"偏好对齐" },
+    { k:"SFT",         v:"指令微调" },
+    { k:"LoRA",        v:"参数高效" },
+    { k:"RAG",         v:"检索增强" },
+  ]},
+  { cat: "Data·Engineering", items: [
+    { k:"Python",       v:"3.11" },
+    { k:"pandas",       v:"分析" },
+    { k:"Scrapy",       v:"爬取" },
+    { k:"Selenium",     v:"浏览器" },
+    { k:"Label Studio", v:"标注" },
+    { k:"Neo4j",        v:"图数据库" },
+    { k:"SQLite",       v:"本地存储" },
+  ]},
+  { cat: "AI × Biology", items: [
+    { k:"AlphaFold2",  v:"蛋白结构" },
+    { k:"ColabFold",   v:"快速预测" },
+    { k:"PyMOL",       v:"分子可视" },
+    { k:"pLDDT",       v:"置信度评估" },
+  ]},
+  { cat: "Pharma·Regulatory", items: [
+    { k:"FDA",   v:"美国" },
+    { k:"EMA",   v:"欧盟" },
+    { k:"NMPA",  v:"国家药监局" },
+    { k:"GLP-1", v:"司美格鲁肽" },
+    { k:"Biosimilar", v:"生物类似药" },
+  ]},
+  { cat: "Language", items: [
+    { k:"中文", v:"母语" },
+    { k:"韩语", v:"母语" },
+    { k:"English", v:"Proficient · C1" },
+  ]},
+];
+
+const PROJECTS = [
+  {
+    id: "01",
+    title: "医学文献 中 ↔ EN 平行语料",
+    sub: "Medical Literature Parallel Corpus",
+    summary: "构建医学领域中英平行句对数据集，通过 LoRA 微调提升翻译质量。",
+    metrics: [
+      { k: "句对", v: "5,000+" },
+      { k: "标注 IAA (Kappa)", v: "0.85+" },
+      { k: "BLEU ↑", v: "+12.0" },
+    ],
+    stack: ["Label Studio","Qwen2-7B","LoRA","PEFT"],
+    outcome: "微调后在医学 subdomain 上显著优于 base 模型。",
+  },
+  {
+    id: "02",
+    title: "药品说明书知识图谱 + RAG",
+    sub: "Drug Leaflet KG · Neo4j + LangChain",
+    summary: "从国家药监局 1,200+ 份说明书中抽取实体关系，构建图谱并接入 RAG 问答。",
+    metrics: [
+      { k: "说明书", v: "1,200+" },
+      { k: "实体类别", v: "8" },
+      { k: "问答准确率", v: "82%" },
+    ],
+    stack: ["NMPA","NER","Neo4j","LangChain"],
+    outcome: "支持按药物 / 适应症 / 不良反应多维度检索与生成。",
+  },
+  {
+    id: "03",
+    title: "医药监管情报爬虫系统",
+    sub: "FDA / EMA Regulatory Crawler",
+    summary: "对 10+ 官方站点建立订阅，聚焦 GLP-1 / 生物类似药赛道，自动输出监管周报。",
+    metrics: [
+      { k: "监控站点", v: "10+" },
+      { k: "情报条目", v: "2,000+" },
+      { k: "更新频率", v: "W1" },
+    ],
+    stack: ["Scrapy","Selenium","SQLite","Cron"],
+    outcome: "每周周报沉淀为公司内部可复用的情报数据库。",
+  },
+  {
+    id: "04",
+    title: "医疗场景 RLHF 偏好评估",
+    sub: "RLHF Preference Benchmark · Healthcare",
+    summary: "对比四家主流 LLM 在医疗问答上的表现，交付评估规范 v1.2。",
+    metrics: [
+      { k: "问答对", v: "5,000+" },
+      { k: "对比模型", v: "4" },
+      { k: "规范版本", v: "v1.2" },
+    ],
+    stack: ["ChatGPT","Claude","DeepSeek","Qwen"],
+    outcome: "《医疗场景 LLM 评估规范 v1.2》,被团队作为标注与评测基线。",
+  },
+];
+
+const TIMELINE = [
+  {
+    date: "2024.06 — 2026.04",
+    role: "国际化项目经理",
+    org: "杭州中美华东制药有限公司",
+    tag: "Pharma · Intelligence",
+    bullets: [
+      "自主搭建 FDA / EMA 医药监管情报爬虫系统",
+      "围绕司美格鲁肽（GLP-1）/ 生物类似药建立关键词订阅",
+      "每周定时输出监管动态周报,沉淀情报数据库 2,000+ 条",
+      "日常深度使用 ChatGPT / Claude / DeepSeek / Kimi 辅助工作",
+    ],
+  },
+  {
+    date: "2022 — 2023",
+    role: "MSc · Biochemistry",
+    org: "University of Edinburgh · QS 22",
+    tag: "Education",
+    bullets: [
+      "爱丁堡大学生物化学硕士项目",
+      "在湿实验室之外,开始系统学习 AlphaFold2 / ColabFold",
+      "以 AI 预测 + 人工验证的范式理解蛋白结构学",
+    ],
+  },
+  {
+    date: "2018 — 2022",
+    role: "BSc · Applied Chemistry",
+    org: "中国农业大学 · 985 / 211",
+    tag: "Education",
+    bullets: [
+      "应用化学本科,系统训练实验设计与分析思维",
+      "毕业设计涉及 Python / pandas 数据处理",
+    ],
+  },
+];
+
+const TICKER_ITEMS = [
+  "FDA · GLP-1 label update · W16",
+  "EMA · CHMP opinion · biosimilar",
+  "NMPA · 仿制药一致性评价 · 2026Q2",
+  "AlphaFold3 · monomer refinement",
+  "Qwen2-7B · LoRA r=16 · BLEU+12",
+  "Neo4j · 1,200 leaflet nodes",
+  "Scrapy · 10 sources · ok",
+  "RLHF · 5,000 pairs · labeled",
+  "Kappa · 0.85 · inter-annotator",
+  "Claude Sonnet · medical QA",
+  "DeepSeek R1 · reasoning eval",
+  "Label Studio · v1.13.1",
+];
+
+/* ============================================================
+   HELIX / PROTEIN SVG — hero visual
+   ============================================================ */
+function HelixCanvas(){
+  // A double helix made of two sinusoidal strands + rungs.
+  // Intentional: reads as DNA *and* as a data flow.
+  const W = 560, H = 640;
+  const strands = 2;
+  const turns = 5;
+  const samples = 140;
+  const amplitude = 120;
+
+  const strand = (phase) => {
+    let d = "";
+    for(let i=0;i<=samples;i++){
+      const t = i/samples;
+      const y = t * H;
+      const x = W/2 + Math.sin(t * Math.PI * 2 * turns + phase) * amplitude;
+      d += (i===0 ? "M" : "L") + x.toFixed(1) + "," + y.toFixed(1) + " ";
+    }
+    return d;
+  };
+  const rungs = [];
+  const rungCount = 44;
+  for(let i=0;i<rungCount;i++){
+    const t = (i+0.5)/rungCount;
+    const y = t * H;
+    const x1 = W/2 + Math.sin(t * Math.PI * 2 * turns) * amplitude;
+    const x2 = W/2 + Math.sin(t * Math.PI * 2 * turns + Math.PI) * amplitude;
+    rungs.push({x1,y,x2, key:i, t});
+  }
+
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-full helix-float" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <linearGradient id="strandA" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0" stopColor="var(--bio)" stopOpacity="0.2"/>
+          <stop offset="0.5" stopColor="var(--bio)" stopOpacity="1"/>
+          <stop offset="1" stopColor="var(--bio)" stopOpacity="0.2"/>
+        </linearGradient>
+        <linearGradient id="strandB" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0" stopColor="var(--ice)" stopOpacity="0.15"/>
+          <stop offset="0.5" stopColor="var(--ice)" stopOpacity="0.8"/>
+          <stop offset="1" stopColor="var(--ice)" stopOpacity="0.15"/>
+        </linearGradient>
+        <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="2.4" />
+        </filter>
+      </defs>
+
+      {/* rungs */}
+      {rungs.map(r => (
+        <line key={r.key} x1={r.x1} y1={r.y} x2={r.x2} y2={r.y}
+          stroke="var(--line)" strokeWidth="0.8"
+          opacity={0.25 + 0.5*Math.abs(Math.sin(r.t*Math.PI*turns*2))}
+        />
+      ))}
+      {/* strands glow */}
+      <g filter="url(#glow)" opacity="0.6">
+        <path d={strand(0)} stroke="url(#strandA)" strokeWidth="2.2" fill="none" />
+        <path d={strand(Math.PI)} stroke="url(#strandB)" strokeWidth="2.0" fill="none" />
+      </g>
+      {/* strands crisp */}
+      <path d={strand(0)} stroke="url(#strandA)" strokeWidth="1.2" fill="none" />
+      <path d={strand(Math.PI)} stroke="url(#strandB)" strokeWidth="1.0" fill="none" />
+
+      {/* base pair dots */}
+      {rungs.map(r=>(
+        <g key={"d"+r.key}>
+          <circle cx={r.x1} cy={r.y} r="2.2" fill="var(--bio)"/>
+          <circle cx={r.x2} cy={r.y} r="1.8" fill="var(--ice)"/>
+        </g>
+      ))}
+
+      {/* measurement ticks */}
+      {[0.15,0.38,0.62,0.85].map((t,i)=>(
+        <g key={"m"+i} transform={`translate(40, ${t*H})`}>
+          <line x1="0" x2="12" y1="0" y2="0" stroke="var(--ink-3)" strokeWidth="1"/>
+          <text x="18" y="4" fill="var(--ink-3)" fontSize="9" fontFamily="JetBrains Mono">
+            {["N-term","α-helix","β-sheet","C-term"][i]}
+          </text>
+        </g>
+      ))}
+    </svg>
+  );
+}
+
+/* ============================================================
+   Animated regulatory ticker (hero side)
+   ============================================================ */
+function Ticker({items, show}){
+  if(!show) return null;
+  const loop = [...items, ...items];
+  return (
+    <div className="h-full overflow-hidden relative" style={{maskImage:"linear-gradient(to bottom, transparent, black 10%, black 90%, transparent)", WebkitMaskImage:"linear-gradient(to bottom, transparent, black 10%, black 90%, transparent)"}}>
+      <div className="ticker-column font-mono text-[11px] flex flex-col gap-2">
+        {loop.map((t, i) => {
+          const kind = i % 3;
+          return (
+            <div key={i} className="flex items-center gap-2">
+              <span className={kind===0?"text-bio":kind===1?"text-ice":"text-warn"}>●</span>
+              <span className="text-ink-2 whitespace-nowrap">{t}</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
+   NAV
+   ============================================================ */
+function Nav(){
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(()=>{
+    const onScroll = ()=> setScrolled(window.scrollY > 40);
+    window.addEventListener("scroll", onScroll);
+    return ()=> window.removeEventListener("scroll", onScroll);
+  },[]);
+  const items = [
+    { h:"#about",    n:"§02", l:"About"    },
+    { h:"#stack",    n:"§03", l:"Stack"    },
+    { h:"#projects", n:"§04", l:"Projects" },
+    { h:"#timeline", n:"§05", l:"Timeline" },
+    { h:"#contact",  n:"§06", l:"Contact"  },
+  ];
+  return (
+    <nav className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${scrolled?"backdrop-blur-md bg-base/80 border-b border-soft":"border-b border-transparent"}`}>
+      <div className="max-w-[1400px] mx-auto px-6 md:px-10 py-4 flex items-center justify-between">
+        <a href="#top" className="flex items-center gap-3 group">
+          <Monogram />
+          <div className="font-mono text-[11px] leading-tight">
+            <div className="text-ink">CyberHuck</div>
+            <div className="text-ink-3">罗明洙 · 杭州</div>
+          </div>
+        </a>
+        <div className="hidden md:flex items-center gap-1">
+          {items.map(it=>(
+            <a key={it.h} href={it.h}
+               className="font-mono text-[11px] px-3 py-2 flex items-center gap-2 text-ink-2 hover:text-ink transition-colors">
+              <span className="text-ink-3">{it.n}</span>
+              <span>{it.l}</span>
+            </a>
+          ))}
+        </div>
+        <a href="#contact" className="font-mono text-[11px] px-3 py-2 border border-line rounded-full hover:border-bio hover:text-bio transition-colors">
+          <span className="pulse-bio inline-block mr-2 text-bio">●</span>Available
+        </a>
+      </div>
+    </nav>
+  );
+}
+
+function Monogram(){
+  return (
+    <svg width="28" height="28" viewBox="0 0 28 28">
+      <circle cx="14" cy="14" r="13" fill="none" stroke="var(--line)" />
+      <path d="M7 20 L7 8 L10 12 L14 8 L14 20" stroke="var(--bio)" strokeWidth="1.4" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M16 20 L16 8 L21 14 L16 14" stroke="var(--ice)" strokeWidth="1.4" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+      <circle cx="14" cy="14" r="1.4" fill="var(--bio)"/>
+    </svg>
+  );
+}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+function Hero({tweaks}){
+  return (
+    <section id="top" className="relative min-h-screen pt-28 pb-20 px-6 md:px-10 overflow-hidden">
+      {tweaks.showGrid && <div className="absolute inset-0 grid-bg opacity-60 pointer-events-none"/>}
+      <div className="max-w-[1400px] mx-auto relative z-[2]">
+        {/* Top lab-notebook meta */}
+        <div className="flex items-center justify-between flex-wrap gap-3 mb-16 font-mono text-[11px] text-ink-3">
+          <div className="flex items-center gap-4">
+            <span>LAB NOTEBOOK · ENTRY 2026-04</span>
+            <span className="hidden md:inline">/</span>
+            <span className="hidden md:inline">LAT 30.27°N  LON 120.15°E · HANGZHOU</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <span><span className="text-bio pulse-bio">●</span> STATUS: OPEN-TO-ROLES</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-12 gap-6 md:gap-10 items-start">
+          {/* Left column — primary text */}
+          <div className="col-span-12 lg:col-span-7">
+            <div className="section-label mb-6">§01 · Introduction</div>
+
+            <h1 className="font-serif text-[clamp(48px,8vw,120px)] leading-[0.95] tracking-[-0.02em] text-ink">
+              <span className="block">CyberHuck</span>
+              <span className="block italic text-ink-2" style={{fontWeight:300}}>罗明洙.</span>
+            </h1>
+
+            <div className="mt-8 max-w-xl">
+              <div className="flex flex-wrap gap-2 mb-6">
+                <span className="chip"><span className="text-bio">BIO</span>&nbsp;·&nbsp;Biochemistry, MSc</span>
+                <span className="chip"><span className="text-ice">AI</span>&nbsp;·&nbsp;Training · RLHF</span>
+                <span className="chip"><span className="text-warn">TRI</span>&nbsp;·&nbsp;中 / 한 / EN</span>
+              </div>
+
+              <p className="font-serif text-[22px] md:text-[26px] leading-[1.35] text-ink-2" style={{textWrap:"pretty"}}>
+                从爱丁堡大学生化实验室到医疗大模型数据专家——用
+                <span className="text-bio"> AlphaFold </span>
+                预测蛋白结构,用 <span className="text-bio">Python</span> 爬取 FDA 监管情报,
+                现在用这套「<span className="italic">AI 预测 + 人类验证</span>」的思维训练大模型。
+              </p>
+            </div>
+
+            {/* CTAs */}
+            <div className="mt-10 flex flex-wrap items-center gap-4">
+              <a href="#projects"
+                 className="group relative inline-flex items-center gap-3 px-5 py-3 bg-bio text-[var(--bg)] font-mono text-[12px] rounded-full hover:scale-[1.02] transition-transform">
+                <span className="text-[var(--bg)]">▶</span>
+                View AI projects
+                <span className="text-[var(--bg)] opacity-60">— 04 cases</span>
+              </a>
+              <a href="#contact"
+                 className="inline-flex items-center gap-3 px-5 py-3 border border-line rounded-full font-mono text-[12px] text-ink-2 hover:text-ink hover:border-bio transition-colors">
+                Get in touch
+                <span>→</span>
+              </a>
+              <a href="#" onClick={(e)=>{e.preventDefault(); window.print();}}
+                 className="font-mono text-[12px] text-ink-3 hover:text-ink link-underline">
+                print résumé.pdf
+              </a>
+            </div>
+
+            {/* stat strip */}
+            <div className="mt-14 grid grid-cols-2 md:grid-cols-4 gap-6">
+              {[
+                {k:"ANNOTATED PAIRS",   v:"10,000+", u:"med. QA + trans"},
+                {k:"REGULATORY ENTRIES", v:"2,000+",  u:"FDA/EMA/NMPA"},
+                {k:"BLEU UPLIFT",        v:"+12.0",   u:"Qwen2-7B · LoRA"},
+                {k:"RAG ACCURACY",       v:"82%",     u:"drug KG · 1.2k"},
+              ].map(s=>(
+                <div key={s.k} className="border-t border-line pt-3">
+                  <div className="section-label mb-1">{s.k}</div>
+                  <div className="font-serif text-[32px] leading-none text-ink">{s.v}</div>
+                  <div className="font-mono text-[10px] text-ink-3 mt-2">{s.u}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right column — helix + ticker */}
+          <div className="col-span-12 lg:col-span-5 relative">
+            <div className="relative h-[620px] bg-alt border border-soft rounded-sm overflow-hidden">
+              {/* corner registration marks */}
+              <CornerMarks />
+
+              {/* helix */}
+              <div className="absolute inset-0 flex items-center justify-center px-6">
+                <div className="w-full h-full max-w-[420px]">
+                  <HelixCanvas/>
+                </div>
+              </div>
+
+              {/* overlays */}
+              <div className="absolute top-4 left-4 right-4 flex items-center justify-between font-mono text-[10px] text-ink-3">
+                <span>FIG.01 · DOUBLE HELIX · DATA STREAM</span>
+                <span>λ = 142nm · REV 0.3</span>
+              </div>
+              <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between font-mono text-[10px] text-ink-3">
+                <span>PDB: 1BNA (adapted)</span>
+                <span className="text-bio pulse-bio">● LIVE</span>
+              </div>
+
+              {/* ticker column left */}
+              <div className="absolute top-10 bottom-10 left-4 w-40 hidden md:block">
+                <Ticker items={TICKER_ITEMS} show={tweaks.showTicker}/>
+              </div>
+            </div>
+
+            {/* below-card caption */}
+            <div className="mt-3 flex items-start justify-between gap-4">
+              <p className="font-mono text-[10px] text-ink-3 max-w-[320px] leading-relaxed">
+                读作「从结构到对齐」：左链代表生化背景,右链代表 AI 工程; 碱基对是每一次的人工验证。
+              </p>
+              <div className="flex items-center gap-1.5">
+                <span className="text-bio text-[10px]">●</span>
+                <span className="text-ice text-[10px]">●</span>
+                <span className="text-ink-3 font-mono text-[10px]">bio / ai</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CornerMarks(){
+  const M = ({style}) => (
+    <svg width="16" height="16" viewBox="0 0 16 16" style={style} className="absolute">
+      <path d="M0 0 H8 M0 0 V8" stroke="var(--ink-3)" strokeWidth="1"/>
+    </svg>
+  );
+  return (
+    <>
+      <M style={{top:8,left:8}}/>
+      <svg width="16" height="16" viewBox="0 0 16 16" className="absolute" style={{top:8,right:8,transform:"scaleX(-1)"}}><path d="M0 0 H8 M0 0 V8" stroke="var(--ink-3)" strokeWidth="1"/></svg>
+      <svg width="16" height="16" viewBox="0 0 16 16" className="absolute" style={{bottom:8,left:8,transform:"scaleY(-1)"}}><path d="M0 0 H8 M0 0 V8" stroke="var(--ink-3)" strokeWidth="1"/></svg>
+      <svg width="16" height="16" viewBox="0 0 16 16" className="absolute" style={{bottom:8,right:8,transform:"scale(-1,-1)"}}><path d="M0 0 H8 M0 0 V8" stroke="var(--ink-3)" strokeWidth="1"/></svg>
+    </>
+  );
+}
+
+/* ============================================================
+   ABOUT — crossing narrative
+   ============================================================ */
+function About(){
+  const rowA = ["湿实验室","pipette","蛋白纯化","AlphaFold","pLDDT","PyMOL"];
+  const rowB = ["Scrapy","FDA watch","Label Studio","LoRA","RLHF","RAG"];
+  return (
+    <section id="about" className="relative px-6 md:px-10 py-24 border-t border-soft">
+      <div className="max-w-[1400px] mx-auto">
+        <Header n="§02" title="About" sub="跨界叙事 · Crossing narrative" />
+
+        <div className="grid grid-cols-12 gap-6 md:gap-10 mt-16">
+          <div className="col-span-12 md:col-span-4">
+            <div className="font-mono text-[11px] text-ink-3 mb-4">ABSTRACT</div>
+            <p className="font-serif text-[22px] leading-[1.4] text-ink" style={{textWrap:"pretty"}}>
+              我不是普通的 AI 从业者。我是一个从生命科学跨过来的复合型选手——
+              带着生化专业背景、医药监管实战经验,以及把
+              <span className="text-bio"> AI 当工具链 </span>
+              使用三年以上的直觉。
+            </p>
+          </div>
+
+          <div className="col-span-12 md:col-span-8">
+            <div className="font-mono text-[11px] text-ink-3 mb-4">METHODS</div>
+
+            {/* Two converging lanes */}
+            <div className="relative bg-alt border border-soft rounded-sm p-6 md:p-8 overflow-hidden">
+              <svg viewBox="0 0 800 300" className="w-full h-56" preserveAspectRatio="none">
+                {/* Lane A (bio) */}
+                <path d="M 0 60 C 260 60, 260 150, 400 150" stroke="var(--bio)" strokeWidth="1.4" fill="none" className="animated-path"/>
+                {/* Lane B (ai) */}
+                <path d="M 0 240 C 260 240, 260 150, 400 150" stroke="var(--ice)" strokeWidth="1.4" fill="none" className="animated-path"/>
+                {/* Merged path */}
+                <path d="M 400 150 L 800 150" stroke="var(--ink)" strokeWidth="1.4" fill="none" className="animated-path"/>
+
+                {/* Lane labels */}
+                <text x="0" y="50"  fill="var(--bio)" fontSize="11" fontFamily="JetBrains Mono">LANE A · Biochem</text>
+                <text x="0" y="232" fill="var(--ice)" fontSize="11" fontFamily="JetBrains Mono">LANE B · AI / Data</text>
+                <text x="410" y="140" fill="var(--ink)" fontSize="11" fontFamily="JetBrains Mono">MERGE → Medical LLM Data Specialist</text>
+
+                {/* Lane A keywords */}
+                {rowA.map((w,i)=>(
+                  <text key={"a"+i} x={40 + i*55} y={75} fill="var(--ink-2)" fontSize="9" fontFamily="JetBrains Mono">{w}</text>
+                ))}
+                {/* Lane B keywords */}
+                {rowB.map((w,i)=>(
+                  <text key={"b"+i} x={40 + i*55} y={262} fill="var(--ink-2)" fontSize="9" fontFamily="JetBrains Mono">{w}</text>
+                ))}
+
+                {/* Nodes */}
+                <circle cx="400" cy="150" r="5" fill="var(--bio)"/>
+                <circle cx="400" cy="150" r="12" fill="none" stroke="var(--bio)" opacity="0.4"/>
+                <circle cx="0" cy="60" r="3" fill="var(--bio)"/>
+                <circle cx="0" cy="240" r="3" fill="var(--ice)"/>
+                <circle cx="800" cy="150" r="4" fill="var(--ink)"/>
+              </svg>
+
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-5 font-mono text-[11px] text-ink-2">
+                <div>
+                  <div className="text-bio">LANE A ↓</div>
+                  <div className="mt-1 text-ink-3">爱丁堡 MSc · 中国农大 BSc · 实验设计 · 分子机制</div>
+                </div>
+                <div>
+                  <div className="text-ice">LANE B ↓</div>
+                  <div className="mt-1 text-ink-3">Prompt/SFT/RLHF · Scrapy · Label Studio · LoRA</div>
+                </div>
+                <div>
+                  <div className="text-ink">MERGE →</div>
+                  <div className="mt-1 text-ink-3">医学领域 LLM 数据 · 监管情报 · 评估规范</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Three principle cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+              {[
+                {i:"01", k:"AI 预测 + 人工验证", v:"AlphaFold 的置信度不够高时,人走回到湿实验。LLM 的回答不够稳时,标注者回到语料。"},
+                {i:"02", k:"从监管读数据",       v:"FDA / EMA 的每一次 label update,都是一条强信号的训练样本。"},
+                {i:"03", k:"三语, 非装饰",       v:"中 / 한 / EN 是语料层的默认视角,不只是简历上的加分项。"},
+              ].map(c=>(
+                <div key={c.i} className="bg-card border border-soft rounded-sm p-5 card-hover">
+                  <div className="font-mono text-[10px] text-ink-3">{c.i}</div>
+                  <div className="font-serif text-[18px] text-ink mt-1">{c.k}</div>
+                  <div className="mt-2 text-[13px] text-ink-2 leading-relaxed">{c.v}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Header({n, title, sub}){
+  return (
+    <div className="flex items-end justify-between flex-wrap gap-4">
+      <div>
+        <div className="section-label mb-3">{n} · {sub}</div>
+        <h2 className="font-serif text-[clamp(40px,6vw,72px)] leading-none tracking-[-0.02em]">{title}.</h2>
+      </div>
+      <div className="hairline flex-1 min-w-[80px] mb-4 ml-8"/>
+    </div>
+  );
+}
+
+/* ============================================================
+   SKILL STACK — periodic-table-ish grid
+   ============================================================ */
+function Stack(){
+  const [active, setActive] = useState(null);
+  return (
+    <section id="stack" className="relative px-6 md:px-10 py-24 border-t border-soft bg-alt">
+      <div className="max-w-[1400px] mx-auto">
+        <Header n="§03" title="Stack" sub="周期表式技能栈" />
+
+        <div className="mt-14 space-y-10">
+          {SKILLS.map((group)=>(
+            <div key={group.cat} className="grid grid-cols-12 gap-4 items-start">
+              <div className="col-span-12 md:col-span-3">
+                <div className="font-mono text-[11px] text-ink-3">GROUP</div>
+                <div className="font-serif italic text-[24px] text-ink leading-tight">{group.cat}.</div>
+                <div className="measure mt-3 opacity-60 max-w-[180px]"/>
+              </div>
+              <div className="col-span-12 md:col-span-9">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+                  {group.items.map((it, i)=>{
+                    const id = group.cat + "-" + i;
+                    const isActive = active === id;
+                    const sym = (it.k.match(/[A-Za-z\u4e00-\u9fa5]/g)||[]).slice(0,2).join("");
+                    return (
+                      <button key={id}
+                        onMouseEnter={()=>setActive(id)} onFocus={()=>setActive(id)}
+                        onMouseLeave={()=>setActive(null)} onBlur={()=>setActive(null)}
+                        className={`relative text-left bg-card border rounded-sm p-3 transition-all ${isActive?"border-bio -translate-y-0.5":"border-soft"}`}>
+                        <div className="flex items-start justify-between">
+                          <div className="font-mono text-[10px] text-ink-3">{String(i+1).padStart(2,"0")}</div>
+                          <div className={`font-mono text-[10px] ${isActive?"text-bio":"text-ink-3"}`}>●</div>
+                        </div>
+                        <div className="font-serif text-[22px] text-ink mt-3 leading-none truncate">{sym}</div>
+                        <div className="text-[11px] text-ink-2 mt-1 truncate">{it.k}</div>
+                        <div className="font-mono text-[9px] text-ink-3 mt-2 truncate">{it.v}</div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ============================================================
+   PROJECTS — research paper cards
+   ============================================================ */
+function Projects(){
+  const ref = useRef(null);
+  const onMove = (e, el)=>{
+    const rect = el.getBoundingClientRect();
+    el.style.setProperty('--mx', (e.clientX - rect.left) + 'px');
+    el.style.setProperty('--my', (e.clientY - rect.top) + 'px');
+  };
+
+  return (
+    <section id="projects" className="relative px-6 md:px-10 py-24 border-t border-soft">
+      <div className="max-w-[1400px] mx-auto">
+        <Header n="§04" title="AI Projects" sub="04 case studies · 2024—2026" />
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-14" ref={ref}>
+          {PROJECTS.map((p, idx)=>(
+            <article key={p.id}
+              onMouseMove={(e)=>onMove(e, e.currentTarget)}
+              className="project-card bg-alt border border-soft rounded-sm p-6 md:p-8 card-hover relative">
+              <div className="flex items-start justify-between gap-4 mb-5">
+                <div className="flex items-center gap-3">
+                  <div className="font-mono text-[11px] text-ink-3">CASE · {p.id}</div>
+                  <div className="h-px w-8 bg-[var(--line)]"/>
+                  <div className="font-mono text-[11px] text-bio">{"// "+p.sub}</div>
+                </div>
+                <ProjectGlyph id={p.id}/>
+              </div>
+
+              <h3 className="font-serif text-[28px] md:text-[32px] leading-[1.05] tracking-[-0.01em]">{p.title}</h3>
+
+              <p className="mt-4 text-[14px] text-ink-2 leading-relaxed max-w-[56ch]">{p.summary}</p>
+
+              {/* Metric row */}
+              <div className="mt-6 grid grid-cols-3 gap-3">
+                {p.metrics.map(m=>(
+                  <div key={m.k} className="border-t border-line pt-2">
+                    <div className="font-mono text-[10px] text-ink-3">{m.k}</div>
+                    <div className="font-serif text-[22px] text-ink">{m.v}</div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-6 flex flex-wrap gap-1.5">
+                {p.stack.map(s=>(
+                  <span key={s} className="chip">{s}</span>
+                ))}
+              </div>
+
+              <div className="mt-5 border-t border-line pt-4 flex items-start gap-3">
+                <span className="font-mono text-[10px] text-ink-3 mt-0.5">OUTCOME</span>
+                <span className="text-[13px] text-ink-2 flex-1">{p.outcome}</span>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ProjectGlyph({id}){
+  // Unique mini-diagram per project.
+  const common = { width:64, height:64, viewBox:"0 0 64 64" };
+  if(id==="01"){
+    // parallel corpus — two lanes of dots
+    return (
+      <svg {...common}>
+        {[...Array(6)].map((_,i)=>(
+          <g key={i}>
+            <circle cx={8+i*10} cy="22" r="2" fill="var(--bio)"/>
+            <circle cx={8+i*10} cy="42" r="2" fill="var(--ice)"/>
+            <line x1={8+i*10} y1="22" x2={8+i*10} y2="42" stroke="var(--line)"/>
+          </g>
+        ))}
+      </svg>
+    );
+  }
+  if(id==="02"){
+    // KG — nodes and edges
+    const nodes = [[32,10],[12,28],[52,28],[20,54],[44,54],[32,36]];
+    const edges = [[0,1],[0,2],[1,3],[2,4],[1,5],[2,5],[3,5],[4,5]];
+    return (
+      <svg {...common}>
+        {edges.map(([a,b],i)=>(
+          <line key={i} x1={nodes[a][0]} y1={nodes[a][1]} x2={nodes[b][0]} y2={nodes[b][1]} stroke="var(--line)"/>
+        ))}
+        {nodes.map((n,i)=>(
+          <circle key={i} cx={n[0]} cy={n[1]} r={i===5?3.5:2.5} fill={i===5?"var(--bio)":"var(--ink-2)"}/>
+        ))}
+      </svg>
+    );
+  }
+  if(id==="03"){
+    // crawler — nested squares + arrow
+    return (
+      <svg {...common}>
+        <rect x="10" y="10" width="44" height="44" fill="none" stroke="var(--line)"/>
+        <rect x="18" y="18" width="28" height="28" fill="none" stroke="var(--line)"/>
+        <rect x="26" y="26" width="12" height="12" fill="var(--bio)" opacity="0.6"/>
+        <path d="M8 32 L56 32" stroke="var(--ice)" strokeWidth="1" strokeDasharray="2 3"/>
+      </svg>
+    );
+  }
+  // 04 RLHF — preference bars
+  return (
+    <svg {...common}>
+      {[22,14,28,10].map((h,i)=>(
+        <rect key={i} x={8+i*12} y={52-h} width="8" height={h} fill={i===0?"var(--bio)":"var(--ink-3)"}/>
+      ))}
+      <path d="M6 54 L58 54" stroke="var(--line)"/>
+    </svg>
+  );
+}
+
+/* ============================================================
+   TIMELINE
+   ============================================================ */
+function Timeline(){
+  return (
+    <section id="timeline" className="relative px-6 md:px-10 py-24 border-t border-soft bg-alt">
+      <div className="max-w-[1400px] mx-auto">
+        <Header n="§05" title="Timeline" sub="Work · Education · 2018 → now" />
+
+        <div className="mt-14 relative">
+          <div className="absolute left-4 md:left-1/2 md:-translate-x-1/2 top-0 bottom-0 w-px bg-[var(--line)]"/>
+          <div className="space-y-14">
+            {TIMELINE.map((t,i)=>(
+              <div key={i} className="grid grid-cols-12 gap-4 md:gap-8">
+                {/* left (date) on odd, right on even */}
+                <div className={`col-span-12 md:col-span-5 ${i%2===0?"md:order-1 md:text-right":"md:order-3"}`}>
+                  <div className="font-mono text-[11px] text-ink-3">{t.tag}</div>
+                  <div className="font-serif text-[22px] italic text-ink-2">{t.date}</div>
+                </div>
+
+                <div className="col-span-12 md:col-span-2 md:order-2 relative">
+                  <div className="absolute left-4 md:left-1/2 md:-translate-x-1/2 -top-1 w-3 h-3 rounded-full bg-[var(--bio)] marker-bio"/>
+                </div>
+
+                <div className={`col-span-12 md:col-span-5 ${i%2===0?"md:order-3":"md:order-1"}`}>
+                  <div className="bg-card border border-soft rounded-sm p-5 card-hover">
+                    <div className="font-serif text-[26px] leading-tight">{t.role}</div>
+                    <div className="font-mono text-[11px] text-ink-3 mt-1">{t.org}</div>
+                    <ul className="mt-4 space-y-2 text-[13px] text-ink-2">
+                      {t.bullets.map((b,j)=>(
+                        <li key={j} className="flex gap-2">
+                          <span className="text-bio mt-1.5 shrink-0 w-1.5 h-1.5 rounded-full bg-[var(--bio)] inline-block"/>
+                          <span>{b}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ============================================================
+   CONTACT
+   ============================================================ */
+function Contact(){
+  const [copied, setCopied] = useState(false);
+  const email = "Huck2024@163.com";
+  const copy = ()=>{
+    navigator.clipboard?.writeText(email);
+    setCopied(true);
+    setTimeout(()=>setCopied(false), 1600);
+  };
+  return (
+    <section id="contact" className="relative px-6 md:px-10 py-28 border-t border-soft">
+      <div className="max-w-[1400px] mx-auto">
+        <Header n="§06" title="Contact" sub="Let's build the next medical LLM." />
+
+        <div className="grid grid-cols-12 gap-6 md:gap-10 mt-14 items-start">
+          <div className="col-span-12 md:col-span-7">
+            <p className="font-serif text-[clamp(30px,4vw,54px)] leading-[1.1] tracking-[-0.01em]" style={{textWrap:"balance"}}>
+              正在寻找 <span className="italic text-bio">AI 训练师</span> / <span className="italic text-bio">医疗大模型数据</span> 相关岗位。欢迎聊聊数据、标注规范、垂类微调。
+            </p>
+
+            <div className="mt-10 space-y-3">
+              <button onClick={copy}
+                className="group flex items-center justify-between w-full md:w-[520px] bg-alt border border-soft rounded-sm px-5 py-4 hover:border-bio transition-colors">
+                <div className="flex items-center gap-4">
+                  <span className="font-mono text-[10px] text-ink-3">EMAIL</span>
+                  <span className="font-serif text-[22px]">{email}</span>
+                </div>
+                <span className="font-mono text-[11px] text-ink-3 group-hover:text-bio">
+                  {copied?"COPIED ✓":"COPY →"}
+                </span>
+              </button>
+
+              <div className="flex items-center justify-between w-full md:w-[520px] bg-alt border border-soft rounded-sm px-5 py-4">
+                <div className="flex items-center gap-4">
+                  <span className="font-mono text-[10px] text-ink-3">WECHAT·公众号</span>
+                  <span className="font-serif text-[22px]">CyberHuck 的 AI 之旅</span>
+                </div>
+                <span className="font-mono text-[11px] text-bio">SUBSCRIBE →</span>
+              </div>
+
+              <div className="flex items-center justify-between w-full md:w-[520px] bg-alt border border-soft rounded-sm px-5 py-4">
+                <div className="flex items-center gap-4">
+                  <span className="font-mono text-[10px] text-ink-3">LOCATION</span>
+                  <span className="font-serif text-[22px]">杭州 · Hangzhou</span>
+                </div>
+                <span className="font-mono text-[11px] text-ink-3">UTC+8</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-span-12 md:col-span-5">
+            <div className="bg-alt border border-soft rounded-sm p-6 md:p-8">
+              <div className="font-mono text-[10px] text-ink-3 mb-3">QR · 公众号</div>
+              <FakeQR/>
+              <div className="mt-4 font-mono text-[11px] text-ink-2">CyberHuck 的 AI 之旅</div>
+              <div className="font-mono text-[10px] text-ink-3 mt-1">微信扫一扫 · 订阅 AI 训练笔记</div>
+            </div>
+          </div>
+        </div>
+
+        <footer className="mt-20 flex items-end justify-between flex-wrap gap-4 text-[11px] font-mono text-ink-3">
+          <div>© 2026 · 罗明洙 / CyberHuck · Hangzhou</div>
+          <div className="flex items-center gap-4">
+            <span>build.{new Date().toISOString().slice(0,10)}</span>
+            <span><span className="text-bio pulse-bio">●</span> online</span>
+          </div>
+        </footer>
+      </div>
+    </section>
+  );
+}
+
+function FakeQR(){
+  // Deterministic pseudo-QR, decorative only.
+  const N = 21;
+  const cells = useMemo(()=>{
+    const arr=[];
+    let seed = 7;
+    const rand = ()=> { seed = (seed*9301+49297) % 233280; return seed/233280; };
+    for(let y=0;y<N;y++){
+      for(let x=0;x<N;x++){
+        arr.push(rand() > 0.52 ? 1 : 0);
+      }
+    }
+    return arr;
+  },[]);
+  const corner = (x,y) => (x<7 && y<7) || (x>=N-7 && y<7) || (x<7 && y>=N-7);
+  return (
+    <svg viewBox="0 0 220 220" className="w-full max-w-[240px]">
+      <rect width="220" height="220" fill="var(--bg)" rx="4"/>
+      {cells.map((v,i)=>{
+        const x=i%N, y=(i/N|0);
+        if(corner(x,y)) return null;
+        if(!v) return null;
+        return <rect key={i} x={14+x*9} y={14+y*9} width="7" height="7" fill="var(--ink)"/>;
+      })}
+      {/* finder patterns */}
+      {[[14,14],[14+14*9,14],[14,14+14*9]].map(([fx,fy],i)=>(
+        <g key={i}>
+          <rect x={fx} y={fy} width="63" height="63" fill="none" stroke="var(--ink)" strokeWidth="9"/>
+          <rect x={fx+18} y={fy+18} width="27" height="27" fill="var(--ink)"/>
+        </g>
+      ))}
+      {/* bio accent */}
+      <rect x={14+10*9} y={14+10*9} width="20" height="20" fill="var(--bio)"/>
+    </svg>
+  );
+}
+
+/* ============================================================
+   TWEAKS
+   ============================================================ */
+function Tweaks({tweaks, setTweaks}){
+  const [open, setOpen] = useState(true);
+  const [edit, setEdit] = useState(false);
+
+  useEffect(()=>{
+    // apply accent hue live
+    document.documentElement.style.setProperty('--bio', `oklch(0.84 0.17 ${tweaks.accentHue})`);
+  },[tweaks.accentHue]);
+
+  useEffect(()=>{
+    const handler = (e)=>{
+      if(!e.data) return;
+      if(e.data.type === '__activate_edit_mode') setEdit(true);
+      if(e.data.type === '__deactivate_edit_mode') setEdit(false);
+    };
+    window.addEventListener('message', handler);
+    window.parent.postMessage({type:'__edit_mode_available'}, '*');
+    return ()=> window.removeEventListener('message', handler);
+  },[]);
+
+  const set = (k, v)=>{
+    const next = {...tweaks, [k]: v};
+    setTweaks(next);
+    window.parent.postMessage({type:'__edit_mode_set_keys', edits:{[k]: v}}, '*');
+  };
+
+  if(!edit) return null;
+
+  return (
+    <div className="tweaks-panel" style={{display: open?"block":"none"}}>
+      <div className="flex items-center justify-between mb-3">
+        <div className="text-ink">Tweaks</div>
+        <button onClick={()=>setOpen(false)} className="text-ink-3 hover:text-ink">×</button>
+      </div>
+      <label>
+        <span>Accent hue</span>
+        <input type="range" min="80" max="280" step="1"
+               value={tweaks.accentHue}
+               onChange={e=>set('accentHue', +e.target.value)} />
+      </label>
+      <label>
+        <span>Grid</span>
+        <input type="checkbox" checked={tweaks.showGrid} onChange={e=>set('showGrid', e.target.checked)}/>
+      </label>
+      <label>
+        <span>Hero ticker</span>
+        <input type="checkbox" checked={tweaks.showTicker} onChange={e=>set('showTicker', e.target.checked)}/>
+      </label>
+      <div className="mt-3 text-ink-3">hue = {tweaks.accentHue}</div>
+    </div>
+  );
+}
+
+/* ============================================================
+   APP
+   ============================================================ */
+function App(){
+  const defaults = JSON.parse(document.getElementById('tweak-defaults').textContent.replace(/\/\*EDITMODE-(BEGIN|END)\*\//g,''));
+  const [tweaks, setTweaks] = useState(defaults);
+
+  useEffect(()=>{
+    document.documentElement.style.setProperty('--bio', `oklch(0.84 0.17 ${tweaks.accentHue})`);
+  },[]);
+
+  return (
+    <div className="relative">
+      <Nav/>
+      <Hero tweaks={tweaks}/>
+      <About/>
+      <Stack/>
+      <Projects/>
+      <Timeline/>
+      <Contact/>
+      <Tweaks tweaks={tweaks} setTweaks={setTweaks}/>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+
+</body>
+</html>
